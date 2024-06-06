@@ -2,107 +2,94 @@
 #include <stdlib.h>
 #include <string.h>
 
-//Definição da estrutura do no da árvore
-typedef struct Arvore{
-    char palavra[15];
-    int contagem;
-    struct Arvore *lado_esq;
-    struct Arvore *lado_dir;
-} Arvore;
+#define STR_SZ 100
 
-//Função para criar um novo no
-Arvore* novoNo(char *palavra){
-    Arvore *no = (Arvore *)malloc(sizeof(Arvore));
-    strcpy(no->palavra, palavra);
-    no->contagem = 1;
-    no->lado_esq = NULL;
-    no->lado_dir = NULL;
-    return no;
+typedef struct Tree_
+{
+    char str[STR_SZ];
+    int count;
+    struct Tree* left;
+    struct Tree* right;
+} Tree;
+
+Tree* createNode(char* str)
+{
+    Tree* node = (Tree*)malloc(sizeof(Tree));
+    strcpy_s(node->str, strlen(str) + 1, str);
+    node->count = 1;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
 }
 
-//Função para inserir uma palavra na árvore
-Arvore* insert(Arvore *no, char *palavra){
-    if (no == NULL) {
-        return novoNo(palavra);
-    }
+Tree* insertNode(Tree* node, char* str)
+{
+    if (node == NULL)
+        return createNode(str);
 
-    int cmp = strcmp(palavra, no->palavra);
-
-    if (cmp == 0) {
-        no->contagem++;
-    } else if (cmp < 0) {
-        no->lado_esq = insert(no->lado_esq, palavra);
-    } else {
-        no->lado_dir = insert(no->lado_dir, palavra);
-    }
-
-    return no;
+    int cmp = strcmp(str, node->str);
+    if (cmp == 0)
+        node->count++;
+    else if (cmp < 0)
+        node->left = insertNode(node->left, str);
+    else
+        node->right = insertNode(node->right, str);
+    return node;
 }
 
-//Função para imprimir as palavras e suas quantidades em ordem alfabética
-void em_ordem(Arvore *no){
-    if (no != NULL) {
-        em_ordem(no->lado_esq);
-        printf("%s (%d)\n", no->palavra, no->contagem);
-        em_ordem(no->lado_dir);
-    }
+void sortNode(Tree* node)
+{
+    if (node == NULL)
+        return;
+
+    sortNode(node->left);
+    printf("%s (%d)\n", node->str, node->count);
+    sortNode(node->right);
 }
 
-//Função para processar as palavras
-void processaPalavras(char *str[], int n){
-    Arvore *no = NULL;
-
-    for (int i = 0; i < n; i++) {
-        no = insert(no, str[i]);
-    }
-
-    em_ordem(no);
+void sortWords(char* str[], int n)
+{
+    Tree* node = NULL;
+    for (int i = 0; i < n; i++)
+        node = insertNode(node, str[i]);
+    sortNode(node);
 }
 
-//Função principal
-int main(){
-    int capacidade = 10;
-    int tamanho = 0;
-    char **palavras = malloc(capacidade * sizeof(char *));
-    if (palavras == NULL){
-        fprintf(stderr, "Erro de alocação de memória\n");
-        exit(EXIT_FAILURE);
-    }
+int main() {
+    int wordsCapacity = 10;
+    int wordsLen = 0;
 
-    char palavra[15];
-    printf("Digite algumas palavras (digite '/0' para encerrar):\n");
-    while (1){
-        scanf("%15s", palavra);
+    printf("Insira as palavras que deseja adicionar (0 para sair):\n");
+    char** words = malloc(wordsCapacity * sizeof(char*));
+    char word[STR_SZ];
+    while (1) 
+    {
+        scanf_s("%s", word, sizeof(word));
 
-        if (strcmp(palavra, "/0") == 0){
+        if (strcmp(word, "0") == 0) 
             break;
+
+        if (wordsLen == wordsCapacity) 
+        {
+            wordsCapacity = wordsCapacity * 2;
+            words = realloc(words, wordsCapacity * sizeof(char*));
         }
 
-        if (tamanho == capacidade){
-            capacidade *= 2;
-            palavras = realloc(palavras, capacidade * sizeof(char *));
-            if (palavras == NULL) {
-                fprintf(stderr, "Erro de realocação de memória\n");
-                exit(EXIT_FAILURE);
-            }
-        }
-
-        palavras[tamanho] = malloc((strlen(palavra) + 1) * sizeof(char));
-        if (palavras[tamanho] == NULL) {
-            fprintf(stderr, "Erro de alocação de memória\n");
-            exit(EXIT_FAILURE);
-        }
-        strcpy(palavras[tamanho], palavra);
-        tamanho++;
+        words[wordsLen] = malloc((strlen(words) + 1) * sizeof(char));
+        strcpy_s(words[wordsLen], strlen(word) + 1, word);
+        wordsLen++;
     }
-    
-	printf("Segue abaixo a quantidade de vezes em que cada palavra foi digitada:\n");
-    processaPalavras(palavras, tamanho);
 
-    for (int i = 0; i < tamanho; i++){
-        free(palavras[i]);
-    }
-    free(palavras);
+    printf("\\/ Quantidade de palavras digitadas \\/\n");
+    sortWords(words, wordsLen);
+
+    for (int i = 0; i < wordsLen; i++) 
+        free(words[i]);
+    free(words);
+
+    printf("Aperte qualquer letra + enter para finalizar...\n");
+    char key;
+    scanf_s(" %c", &key);
 
     return 0;
 }
