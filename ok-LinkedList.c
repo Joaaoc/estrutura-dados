@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 /*
 Bruno Iglesias Guagliardi
 Caio Marques Egidio
@@ -9,6 +6,9 @@ Luis Gustavo de Menezes Eggenstein
 Matheus Vieira da Cunha e Silva
 Pablo Gomide
 */
+
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct Teste_
 {
