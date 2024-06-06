@@ -1,3 +1,12 @@
+/*
+Bruno Iglesias Guagliardi
+Caio Marques Egidio
+João Vitor Canella Rodrigues
+Luis Gustavo de Menezes Eggenstein
+Matheus Vieira da Cunha e Silva
+Pablo Gomide
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
