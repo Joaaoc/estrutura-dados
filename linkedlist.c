@@ -16,6 +16,8 @@ Teste* criarLista(Teste* node, int value)
 	return teste;
 }
 
+//Aloca espaço na memória do tamanho de "Teste"
+
 void mostra(Teste* node)
 {
 	printf("Mostrando a lista: ");
@@ -31,6 +33,8 @@ void mostra(Teste* node)
 	}
 	printf("\n");
 }
+// Se o primeiro nó apontar para um valor nulo, retorna que a lista está vazia. Caso contrário, percorre toda lista (enquanto imprime na tela do usuário, até encontrar um nó que aponte para o valor nulo, o que indicará o fim da lista.
+
 
 void mostraEspecifico(Teste* node, int index)
 {
@@ -58,7 +62,7 @@ void mostraEspecifico(Teste* node, int index)
 	}
 	printf("%d\n", node->value);
 }
-
+//Se o primeiro nó tiver um valor NULL, indicará que a lista está vazia. Se o index (posicao escolhida pelo usuario) for menor que 0, retornará que é uma posição inválida. Caso contrário, entrará na estrutura de repetição "while" para procurar a posição solicitada, se no meio da busca da posição solicitada encontrar um nó apontando para um nó com valor nulo, irá informar ao usuário que a posição escolhida é maior que a lista criada.
 
 Teste* inserirNoInicio(Teste* startNode, int value)
 {
@@ -71,6 +75,7 @@ Teste* inserirNoInicio(Teste* startNode, int value)
 	printf("%d inserido no inicio da lista.\n", value);
 	return newNode;
 }
+// Caso o primeiro nó seja nulo, informará ao usuário que a lista está vazia. Caso contrário, insere o valor "value" escolhido pelo usuário no início da lista. 
 
 Teste* inserirNoFinal(Teste* startNode, int value)
 {
@@ -89,6 +94,8 @@ Teste* inserirNoFinal(Teste* startNode, int value)
 	printf("%d inserido no final da lista.\n", newNode->value);
 	return startNode;
 }
+
+// Caso o primeiro nó seja nulo, informará ao usuário que a lista está vazia. Caso contrário, percorre toda a lista até que encontre um nó que aponte para um valor NULO (o que indicará o fim da lista e, consequentemente, o ultimo nó) e insere o nó solicitado pelo usuário após o nó encontrado.
 
 Teste* inserirNoMeio(Teste* startNode, int value, int index)
 {
@@ -120,7 +127,7 @@ Teste* inserirNoMeio(Teste* startNode, int value, int index)
 	printf("%d inserido na posicao %d da lista.\n", node->node->value, index + 1);
 	return startNode;
 }
-
+// Caso o index (posicao na lista) informado pelo usuário seja menor do que zero, retornará que é um valor inválido. Caso seja igual a zero, irá chamar a função inserirNoInicio, já que corresponderá à primeira posição. Caso contrário, percorre a lista até encontrar o nó da posição anterior ao solicitado pelo usuário , depois disso cria o nó com o valor inserido pelo usuário na posição solicitada (Ex: Usuário solicitou criação de um nó com valor 100 na posição 5. O programa irá procurar o nó na posição 4 e criará o nó solicitado após o nó na posição 4).
 Teste* excluirNoInicio(Teste* startNode)
 {
 	Teste* node = startNode;
@@ -134,7 +141,7 @@ Teste* excluirNoInicio(Teste* startNode)
 	free(startNode);
 	return newNode;
 }
-
+// Caso o primeiro nó seja nulo, informará ao usuário que a lista está vazia. Caso contrário, remove o primeiro nó encontrado.
 Teste* excluirNoFinal(Teste* startNode)
 {
 	if (startNode == NULL)
@@ -152,6 +159,7 @@ Teste* excluirNoFinal(Teste* startNode)
 	node->node = NULL;
 	return startNode;
 }
+// Caso o primeiro nó seja nulo, informará ao usuário que a lista está vazia. Caso contrário, percorre toda a lista até que encontre um nó que aponte para um valor NULO (o que indicará o fim da lista e, consequentemente, o ultimo nó) e exclui o nó encontrado.
 
 Teste* excluirNoMeio(Teste* startNode, int index)
 {
@@ -192,7 +200,7 @@ Teste* excluirNoMeio(Teste* startNode, int index)
 	node->node = nextNode;
 	return startNode;
 }
-
+// Caso o index (posicao na lista) informado pelo usuário seja menor do que zero, retornará que é um valor inválido. Caso seja igual a zero, irá chamar a função excluirNoInicio, já que corresponderá à primeira posição. Caso contrário, percorre a lista até encontrar o nó da posição anterior ao solicitado pelo usuário, depois disso cria o nó com o valor inserido pelo usuário na posição solicitada (Ex: Usuário solicitou exclusão de um nó com valor 100 na posição 5. O programa irá procurar o nó na posição 4 e deletará o nó posterior.)
 Teste* esvaziar(Teste* startNode)
 {
 	Teste* node = startNode;
@@ -203,7 +211,7 @@ Teste* esvaziar(Teste* startNode)
 	free(node);
 	return NULL;
 }
-
+//Enquanto o nó estiver apontando para um outro nó com valor válido, este nó será excluído. Ao encontrar o ultimo nó, que estará apontando para um valor NULL, sairá da estrutura de repetição e será excluído com free(node);
 int main()
 {
 	Teste* lista = criarLista(NULL, 0); // 0
@@ -217,7 +225,7 @@ int main()
 		printf("-------------------------------------\n");
 		printf("[1] Adicionar no inicio da lista\n");
 		printf("[2] Adicionar no final da lista\n");
-		printf("[3] Adicionar em um ponto espicifico\n");
+		printf("[3] Adicionar em um ponto especifico\n");
 		printf("[4] Listar todos os elementos da lista\n");
 		printf("[5] Listar um elemento especifico da lista\n");
 		printf("[6] Excluir do inicio da lista\n");
@@ -228,6 +236,7 @@ int main()
 		printf("-------------------------------------\n");
 		printf("Qual a sua opcao?\n");
 		scanf_s("%d", &command);
+		system("cls");
 		if (command == 0)
 		{
 			printf("Terminado\n");
@@ -249,7 +258,7 @@ int main()
 		}
 		else if (command == 3)
 		{
-			printf("Digite o valor e a posicao: ");
+			printf("Digite o valor e a posicao [valor posicao]: ");
 			scanf_s("%d %d", &value, &index);
 			printf("\n");
 			lista = inserirNoMeio(lista, value, index);
