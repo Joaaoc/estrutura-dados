@@ -98,7 +98,7 @@ void stackRemove(Pilha** topo, int posicao, int* vaga_ocup, int* vaga_disp, int*
     }
 }
 
-void showGarage(Pilha* topo) 
+void showGarage(Pilha* topo)
 {
     Pilha* temp;
     temp = topo;
@@ -111,16 +111,14 @@ void showGarage(Pilha* topo)
         printf("---------------\n");
         return;
     }
-    else 
+
+    while (temp)
     {
-        while (temp) 
-        {
-            printf("    > Vaga: [%d] | Placa: AAA-%05d | Manobras: (%d)\n", vaga, temp->placa, temp->manobras);
-            temp = temp->next;
-            ++vaga;
-        }
-        printf("---------------\n\n");
+        printf("    > Vaga: [%d] | Placa: AAA-%05d | Manobras: (%d)\n", vaga, temp->placa, temp->manobras);
+        temp = temp->next;
+        ++vaga;
     }
+    printf("---------------\n\n");
 }
 
 int main() 
