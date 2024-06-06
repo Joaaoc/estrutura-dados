@@ -10,42 +10,43 @@ Pablo Gomide
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Pilha_ 
+typedef struct Pilha_
 {
     int placa;
     int manobras;
-    struct Pilha_* next;
+    struct Pilha_ *next;
 } Pilha;
+//Struct que armazena a placa e quantidade de manobras feita por cada carro
 
-int pilhaVazia(Pilha* stack) 
+int pilhaVazia(Pilha *stack)
 {
     return !stack;
 }
 
-void stackPush(Pilha** pilha, int valor, int* vaga_ocup, int* vaga_disp, int usePrint)
+void stackPush(Pilha **pilha, int valor, int *vagaOcupada, int *vagaLivre, int usePrint)
 {
-    Pilha* node = *pilha;
+    Pilha *node = *pilha;
 
-    if (*vaga_ocup >= 5)
+    if (*vagaOcupada >= 5)
     {
         if (usePrint)
             printf("Garagem cheia.\n");
         return;
     }
 
-    while (node != NULL && node->placa != NULL)
+    while (node != NULL)
     {
         if (node->placa == valor)
         {
-            if (usePrint)   
-                printf("O carro com a placa RJ-%05d ja esta estacionado.\n", valor);
+            if (usePrint)
+                printf("O carro com a placa AAA-%05d ja esta estacionado.\n", valor);
             return;
         }
         node = node->next;
     }
-    *vaga_ocup = *vaga_ocup + 1;
-    *vaga_disp = *vaga_disp - 1;
-    Pilha* novo = malloc(sizeof(Pilha));
+    *vagaOcupada = *vagaOcupada + 1;
+    *vagaLivre = *vagaLivre - 1;
+    Pilha *novo = malloc(sizeof(Pilha));
     novo->placa = valor;
     novo->manobras = 0;
     novo->next = *pilha;
@@ -53,28 +54,25 @@ void stackPush(Pilha** pilha, int valor, int* vaga_ocup, int* vaga_disp, int use
     if (usePrint)
         printf("Carro placa AAA-%05d estacionado.\n", valor);
 }
-
-int stackPop(Pilha** topo, int* vaga_ocup, int* vaga_disp, int* manobras)
+//Função para estacionar um carro, caso todas as vagas estejam preenchidas, retorna ao usuário que a garagem está cheia. Caso contrário, adicionará o carro à garagem e alocará na  memória suas informações.
+int stackPop(Pilha **topo, int *vagaOcupada, int *vagaLivre, int *manobras)
 {
     if (pilhaVazia(*topo))
     {
         printf("A vaga ja esta vazia.\n");
         return 0;
     }
-    *vaga_ocup = *vaga_ocup - 1;
-    *vaga_disp = *vaga_disp + 1;
-    Pilha* temp = *topo;
+    *vagaOcupada = *vagaOcupada - 1;
+    *vagaLivre = *vagaLivre + 1;
+    Pilha *temp = *topo;
     *topo = (*topo)->next;
     int valorTirado = temp->placa;
     *manobras = temp->manobras;
-    temp->placa = NULL;
-    temp->manobras = NULL;
     free(temp);
-    temp = NULL;
     return valorTirado;
 }
-
-void stackRemove(Pilha** topo, int posicao, int* vaga_ocup, int* vaga_disp, int* manobras) 
+//Função para retirar um carro da vaga especificada pelo usuário
+void stackRemove(Pilha **topo, int posicao, int *vagaOcupada, int *vagaLivre, int *manobras)
 {
     if (pilhaVazia(*topo))
     {
@@ -82,34 +80,42 @@ void stackRemove(Pilha** topo, int posicao, int* vaga_ocup, int* vaga_disp, int*
         return;
     }
 
-    Pilha* temp = NULL;
-    int posicaoAtual = 0;
-    while (posicaoAtual < posicao - 1 && !pilhaVazia(*topo))
+    Pilha *temp = NULL;
+    int posicaoAtual = 1;
+
+    // Remove carros temporariamente até chegar na posição desejada
+    while (posicaoAtual < posicao && !pilhaVazia(*topo))
     {
-        stackPush(&temp, stackPop(topo, vaga_ocup, vaga_disp, manobras), vaga_ocup, vaga_disp, 0);
+        Pilha *carroRemovido = *topo;
+        int manobrasTemp = 0; // Variável temporária para armazenar manobras
+        stackPush(&temp, stackPop(topo, vagaOcupada, vagaLivre, &manobrasTemp), vagaOcupada, vagaLivre, 0);
+        carroRemovido->manobras += 1; // Incrementar manobras do carro removido temporariamente
         posicaoAtual++;
-        (*topo)->manobras += 1;
     }
 
-    if (posicaoAtual != posicao && !pilhaVazia(*topo))
+    // Verificar se a posição é válida e remover o carro desejado
+    if (posicaoAtual == posicao && !pilhaVazia(*topo))
     {
-        int elemRemovido = stackPop(topo, vaga_ocup, vaga_disp, manobras);
+        int elemRemovido = stackPop(topo, vagaOcupada, vagaLivre, manobras);
         printf("Carro com a placa AAA-%05d da vaga %d foi retirado apos %d manobras.\n", elemRemovido, posicao, *manobras);
     }
-    else 
+    else
     {
         printf("Esta vaga esta vazia, tente outra posicao.\n");
     }
 
+    // Recolocar os carros removidos temporariamente de volta na pilha
     while (!pilhaVazia(temp))
     {
-        stackPush(topo, stackPop(&temp, vaga_ocup, vaga_disp, manobras), vaga_ocup, vaga_disp, 0);
+        int manobrasTemp = 0; // Variável temporária para armazenar manobras
+        stackPush(topo, stackPop(&temp, vagaOcupada, vagaLivre, &manobrasTemp), vagaOcupada, vagaLivre, 0);
+        (*topo)->manobras += 1; // Incrementar manobras do carro recolocado
     }
 }
 
-void showGarage(Pilha* topo)
+void showGarage(Pilha *topo)
 {
-    Pilha* temp;
+    Pilha *temp;
     temp = topo;
     int vaga = 1;
 
@@ -129,15 +135,15 @@ void showGarage(Pilha* topo)
     }
     printf("---------------\n\n");
 }
-
-int main() 
+//Mostra os carros que estão estacionados na garagem, mostrando a vaga em que estão, suas respectivas placas e quantas vezes foram manobrados.
+int main()
 {
-    Pilha* topo = NULL;
+    Pilha *topo = NULL;
 
     char command;
     int placa;
-    int vaga_ocup = 0;
-    int vaga_disp = 5;
+    int vagaOcupada = 0;
+    int vagaLivre = 5;
     int manobras = 0;
 
     printf("--------------------");
@@ -145,7 +151,7 @@ int main()
     {
         system("cls");
         showGarage(topo);
-        
+
         printf("O que deseja fazer?\n");
         printf("    > E <placa> - Estacionar\n");
         printf("    > S <vaga> - Sair da vaga\n");
@@ -162,13 +168,13 @@ int main()
         {
             system("cls");
             printf("Estacionando...\n");
-            stackPush(&topo, placa, &vaga_ocup, &vaga_disp, 1);
+            stackPush(&topo, placa, &vagaOcupada, &vagaLivre, 1);
         }
         else if (command == 'S' || command == 's')
         {
             system("cls");
             printf("Desestacionando...\n");
-            stackRemove(&topo, placa, &vaga_ocup, &vaga_disp, &manobras);
+            stackRemove(&topo, placa, &vagaOcupada, &vagaLivre, &manobras);
         }
 
         system("pause");
